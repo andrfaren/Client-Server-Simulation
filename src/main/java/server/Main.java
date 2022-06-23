@@ -1,5 +1,6 @@
 package server;
 
+import config.Config;
 import com.google.gson.Gson;
 import server.response.Response;
 import server.response.ResponseType;
@@ -20,30 +21,25 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] strings) {
 
         // References to database files
-//        final Path dbPath = Path.of("./JSON Database/task/src/server/data/db.json");
-        final Path dbPath = Path.of("./src/server/data/db.json");
+        final Path dbPath = Path.of("C:\\Users\\andre\\Documents\\repos\\Client-Server-Simulation\\src\\main\\java\\server\\data\\db.json");
+//        final Path dbPath = Path.of("./src/server/data/db.json");
+
 //        System.out.println(Files.exists(dbPath));
 //        System.out.println(System.getProperty("user.dir"));
 //    final Path dbPath = Path.of("C:\\Users\\andre\\IdeaProjects\\JSON Database\\task\\src\\server\\data\\db.json");
 
-        // Server's IP address
-        String ipAddress = "127.0.0.1";
-
-        // Port to be used for communication with a client
-        int port = 23456;
-
-        boolean running = true;
+        boolean isRunning = true;
 
         try {
             System.out.println("Server started!");
 
-            while (running) {
+            while (isRunning) {
                 try {
                     // Create a server socket that will accept or decline requests
-                    ServerSocket server = new ServerSocket(port, 50, InetAddress.getByName(ipAddress));
+                    ServerSocket server = new ServerSocket(Config.PORT, 50, InetAddress.getByName(Config.IP_ADDRESS));
 
                     // Listen for requests
                     Socket socket = server.accept();
@@ -132,7 +128,8 @@ public class Main {
                                 } catch (IOException e) {
                                     throw new RuntimeException(e);
                                 }
-                            });
+                            }
+                            );
 
                             break;
 
@@ -179,7 +176,7 @@ public class Main {
                             break;
 
                         case exit:
-                            running = false;
+                            isRunning = false;
                             executor.submit(() -> {
 
                                 String JSONResponseExitOK = new Gson().toJson(new Response(ResponseType.OK));
@@ -219,5 +216,9 @@ public class Main {
 
         } else return new HashMap<>();
 
+    }
+
+    public static void stopServer() {
+        System.exit(0);
     }
 }
