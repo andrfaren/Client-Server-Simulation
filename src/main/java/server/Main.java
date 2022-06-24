@@ -31,7 +31,7 @@ public class Main {
         try {
             System.out.println("Server started!");
 
-            while (isRunning) {
+//            while (isRunning) {
                 try {
                     // Create a server socket that will accept or decline requests
                     ServerSocket server = new ServerSocket(Config.PORT, 50, InetAddress.getByName(Config.IP_ADDRESS));
@@ -196,7 +196,7 @@ public class Main {
 
                 } catch (IOException e) {
                 }
-            }
+//            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
