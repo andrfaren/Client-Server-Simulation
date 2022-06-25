@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -31,13 +32,14 @@ public class Main {
         try {
             System.out.println("Server started!");
 
-//            while (isRunning) {
+            while (isRunning) {
                 try {
                     // Create a server socket that will accept or decline requests
                     ServerSocket server = new ServerSocket(Config.PORT, 50, InetAddress.getByName(Config.IP_ADDRESS));
 
                     // Listen for requests
                     Socket socket = server.accept();
+                    socket.setSoTimeout(1000);
 
                     DataInputStream input = new DataInputStream(socket.getInputStream());
 
@@ -195,8 +197,9 @@ public class Main {
 
 
                 } catch (IOException e) {
+                    break;
                 }
-//            }
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
