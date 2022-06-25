@@ -17,20 +17,6 @@ class ClientTest {
             }
         };
 
-        Thread clientThread = new Thread() {
-            public void run() {
-                Client client = new Client();
-                try {
-                    client.sendMessage(new String[]{"-t", "get", "-k", "1"});
-                    String messageReceived = client.messageReceived;
-                    assertEquals("{\"response\":\"ERROR\",\"reason\":\"No such key\"}", client.messageReceived);
-
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        };
-
         serverThread.start();
 
         try {
@@ -39,7 +25,10 @@ class ClientTest {
             e.printStackTrace();
         }
 
-        clientThread.start();
+        Client client = new Client();
+        client.sendMessage(new String[]{"-t", "get", "-k", "1"});
+
+        assertEquals("{\"response\":\"ERROR\",\"reason\":\"No such key\"}", client.messageReceived);
     }
 
 }
