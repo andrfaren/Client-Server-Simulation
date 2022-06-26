@@ -17,24 +17,13 @@ import config.Config;
 public class Client {
     public String messageForServer;
     public String messageReceived;
+    private Args userArgs;
+
     public Client() {
         System.out.println("Client started!");
     }
 
-    private void setMessageFromFile(String inputFileName) {
-
-        //            Path inputFilePath = Path.of("C:\\Users\\andre\\IdeaProjects\\JSON Database\\task\\src\\client\\data\\" + userArgs.inputFile);
-        Path inputFilePath = Path.of("src/client/data/" + inputFileName);
-
-        try {
-            this.messageForServer = Files.readString(inputFilePath); // UTF 8
-
-        } catch (IOException e) {
-
-        }
-    }
-
-    public void sendMessage(String[] args) throws IOException {
+    public void sendMessage(String[] args) {
 
         try (
                 Socket socket = new Socket(InetAddress.getByName(Config.IP_ADDRESS), Config.PORT);
@@ -43,24 +32,13 @@ public class Client {
         )
 
         {
-            // Parse args and load them into an object
-            Args userArgs = new Args();
-
-            JCommander.newBuilder()
-                    .addObject(userArgs)
-                    .build()
-                    .parse(args);
-
-            if (userArgs.inputFile != null) {
-
-                setMessageFromFile(userArgs.inputFile);
-
-            } else {
-
-                // Create the JSON object containing the user's command
-                Gson gson = new GsonBuilder().create();
-                this.messageForServer = gson.toJson(userArgs);
+            try {
+                this.messageForServer = getJSONStringFromArgs(args);
+            } catch (IOException e) {
+                System.out.println("Problem reading file containing command. Check that it exists and is formatted properly.");
+                System.exit(1);
             }
+
 
             // Send command to the server
             output.writeUTF(messageForServer);
@@ -74,6 +52,34 @@ public class Client {
 
         } catch (IOException e) {
 
+        }
+    }
+
+    public String setMessageFromFile(String inputFileName) throws IOException {
+        // Path inputFilePath = Path.of("C:\\Users\\andre\\IdeaProjects\\JSON Database\\task\\src\\client\\data\\" + userArgs.inputFile);
+        Path inputFilePath = Path.of("src/client/data/" + inputFileName);
+        return Files.readString(inputFilePath); // UTF 8
+    }
+
+    public String getJSONStringFromArgs(String[] args) throws IOException {
+
+        // Parse args and load them into an object
+        this.userArgs = new Args();
+
+        JCommander.newBuilder()
+                .addObject(userArgs)
+                .build()
+                .parse(args);
+
+        if (this.userArgs.inputFile != null) {
+                return setMessageFromFile(this.userArgs.inputFile);
+        } else {
+
+            // Create the JSON object containing the user's command
+            Gson gson = new GsonBuilder().create();
+
+            // Assign the JSON String
+            return gson.toJson(this.userArgs);
         }
     }
 }
