@@ -55,10 +55,9 @@ class ClientTest {
         assertEquals("{\"response\":\"ERROR\",\"reason\":\"No such key\"}", clientGetDeleted.messageReceived);
 
         // Check response for exit function
-//        Client clientExit = new Client();
-//        clientExit.sendMessage(new String[]{"-t", "exit"});
-//        assertEquals("{\"response\":\"OK\"}", clientExit.messageReceived);
-
+        Client clientExit = new Client();
+        clientExit.sendMessage(new String[]{"-t", "exit"});
+        assertEquals("{\"response\":\"OK\"}", clientExit.messageReceived);
 
     }
 

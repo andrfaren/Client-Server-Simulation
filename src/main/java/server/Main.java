@@ -183,6 +183,14 @@ public class Main {
                                     output.close();
                                     socket.close();
                                     server.close();
+
+                                    // Wait one second before shutting down
+                                    try {
+                                        Thread.sleep(1000);
+                                    } catch (InterruptedException e) {
+                                        e.printStackTrace();
+                                    }
+
                                     System.exit(0);
 
                                 } catch (IOException e) {
