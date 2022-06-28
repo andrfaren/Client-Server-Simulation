@@ -34,11 +34,11 @@ public class Client {
         {
             try {
                 this.messageForServer = getJSONStringFromArgs(args);
+
             } catch (IOException e) {
                 System.out.println("Problem reading file containing command. Check that it exists and is formatted properly.");
                 System.exit(1);
             }
-
 
             // Send command to the server
             output.writeUTF(messageForServer);

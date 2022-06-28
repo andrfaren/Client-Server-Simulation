@@ -140,8 +140,6 @@ public class Main {
 
                                     dbMap = generateHashMap(dbPath);
 
-                                    System.out.println("Before delete" + dbMap.toString());
-
                                     if (dbMap.containsKey(userArgs.key)) {
 
                                         // Update the HashMap
@@ -152,7 +150,6 @@ public class Main {
 
                                         writeLock.unlock();
 
-                                        System.out.println("After delete" + dbMap);
                                         String JSONResponseDeleteOK = new Gson().toJson(new Response(ResponseType.OK));
                                         output.writeUTF(JSONResponseDeleteOK);
 
@@ -203,13 +200,12 @@ public class Main {
                     executor.shutdown();
                     executor.awaitTermination(1000, TimeUnit.MILLISECONDS);
 
-
                 } catch (IOException e) {
-                    break;
+
                 }
             }
         } catch (Exception e) {
-            throw new RuntimeException(e);
+
         }
     }
 
@@ -222,10 +218,6 @@ public class Main {
 
         } else return new HashMap<>();
 
-    }
-
-    public static void stopServer() {
-        System.exit(0);
     }
 }
 
