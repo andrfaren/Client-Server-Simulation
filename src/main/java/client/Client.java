@@ -12,7 +12,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import config.Config;
+import server.ServerConfig;
 
 public class Client {
     public String messageForServer;
@@ -26,7 +26,7 @@ public class Client {
     public void sendMessage(String[] args) {
 
         try (
-                Socket socket = new Socket(InetAddress.getByName(Config.IP_ADDRESS), Config.PORT);
+                Socket socket = new Socket(InetAddress.getByName(ServerConfig.IP_ADDRESS), ServerConfig.PORT);
                 DataInputStream input = new DataInputStream(socket.getInputStream());
                 DataOutputStream output = new DataOutputStream(socket.getOutputStream())
         )

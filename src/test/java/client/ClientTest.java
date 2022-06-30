@@ -20,7 +20,6 @@ class ClientTest {
             e.printStackTrace();
         }
     }
-
     @Test
     void sendMessage() {
 
@@ -45,9 +44,9 @@ class ClientTest {
         assertEquals("{\"response\":\"OK\"}", clientDeleteExists.messageReceived);
 
         // Check response when deleting a value that does not exist
-//        Client clientDeleteNotExists = new Client();
-//        clientDeleteNotExists.sendMessage(new String[]{"-t", "delete", "-k", "1"});
-//        assertEquals("{\"response\":\"ERROR\",\"reason\":\"No such key\"}", clientDeleteNotExists.messageReceived);
+        Client clientDeleteNotExists = new Client();
+        clientDeleteNotExists.sendMessage(new String[]{"-t", "delete", "-k", "1"});
+        assertEquals("{\"response\":\"ERROR\",\"reason\":\"No such key\"}", clientDeleteNotExists.messageReceived);
 
         // Check response when getting a deleted value (i.e. getting value that no longer exists)
         Client clientGetDeleted = new Client();
