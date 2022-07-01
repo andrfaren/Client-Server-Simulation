@@ -67,19 +67,19 @@ public class Server {
 
                                     if (userArgs.inputFile != null) {
 
-                                        writeToDatabase(jsonDatabase.getDbPath(), receivedMessage);
+                                        writeToDatabase(jsonDatabase.dbPath(), receivedMessage);
 
                                     } else {
                                         // HashMap used to load db file contents
                                         HashMap<String, String> dbMap = null;
 
-                                        dbMap = generateHashMap(jsonDatabase.getDbPath());
+                                        dbMap = generateHashMap(jsonDatabase.dbPath());
 
                                         // Update the HashMap
                                         dbMap.put(userArgs.key, userArgs.value);
 
                                         // Write to db.json
-                                        Files.writeString(jsonDatabase.getDbPath(), new Gson().toJson(dbMap));
+                                        Files.writeString(jsonDatabase.dbPath(), new Gson().toJson(dbMap));
 
                                     }
 
@@ -104,7 +104,7 @@ public class Server {
                                             // HashMap used to load db file contents
                                             HashMap<String, String> dbMap = null;
 
-                                            dbMap = generateHashMap(jsonDatabase.getDbPath());
+                                            dbMap = generateHashMap(jsonDatabase.dbPath());
 
                                             if (dbMap.containsKey(userArgs.key)) {
 
@@ -136,7 +136,7 @@ public class Server {
                                     // HashMap used to load db file contents
                                     HashMap<String, String> dbMap = null;
 
-                                    dbMap = generateHashMap(jsonDatabase.getDbPath());
+                                    dbMap = generateHashMap(jsonDatabase.dbPath());
 
                                     if (dbMap.containsKey(userArgs.key)) {
 
@@ -144,7 +144,7 @@ public class Server {
                                         dbMap.remove(userArgs.key);
 
                                         // Write to db.json
-                                        Files.writeString(jsonDatabase.getDbPath(), new Gson().toJson(dbMap));
+                                        Files.writeString(jsonDatabase.dbPath(), new Gson().toJson(dbMap));
 
                                         writeLock.unlock();
 
