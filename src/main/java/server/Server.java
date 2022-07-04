@@ -2,7 +2,6 @@ package server;
 
 import com.google.gson.Gson;
 import server.response.Response;
-import server.response.ResponseType;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -11,8 +10,6 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -22,7 +19,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class Server {
 
-    private final Database database;
+    private Database database;
 
     public Server(Database database) {
         this.database = database;
@@ -63,23 +60,12 @@ public class Server {
                                 String stringToWriteToDb = "";
 
                                 if (userArgs.inputFile == null) {
-
-                                    // HashMap used to load db file contents
-                                    HashMap<String, String> dbMap = null;
-
-                                    dbMap = generateHashMap(database.dbPath());
-
-                                    // Update the HashMap
-                                    dbMap.put(userArgs.key, userArgs.value);
-
-                                    stringToWriteToDb = new Gson().toJson(dbMap);
+                                    database.setAndWriteToDb(userArgs.key, userArgs.value);
 
                                 } else {
                                     stringToWriteToDb = receivedMessage;
+                                    database.writeToDb(stringToWriteToDb);
                                 }
-
-                                // Write to database
-                                writeToDatabase(database.dbPath(), stringToWriteToDb);
 
                                 writeLock.unlock();
 
@@ -94,14 +80,9 @@ public class Server {
                             executor.submit(() -> {
                                         readLock.lock();
 
-                                        // HashMap used to load db file contents
-                                        HashMap<String, String> dbMap = null;
+                                        if (database.getDbMap().containsKey(userArgs.key)) {
 
-                                        dbMap = generateHashMap(database.dbPath());
-
-                                        if (dbMap.containsKey(userArgs.key)) {
-
-                                            String retrievedValue = dbMap.get(userArgs.key);
+                                            String retrievedValue = database.getValue(userArgs.key);
                                             readLock.unlock();
 
                                             // Send response from server to client indicating that 'get' operation was successful
@@ -120,34 +101,21 @@ public class Server {
                             executor.submit(() -> {
                                 writeLock.lock();
 
-                                try {
-                                    // HashMap used to load db file contents
-                                    HashMap<String, String> dbMap = null;
+                                if (database.getDbMap().containsKey(userArgs.key)) {
 
-                                    dbMap = generateHashMap(database.dbPath());
+                                    // Remove the value with the associated key from the database
+                                    database.deleteAndWriteToDb(userArgs.key);
 
-                                    if (dbMap.containsKey(userArgs.key)) {
+                                    writeLock.unlock();
 
-                                        // Update the HashMap
-                                        dbMap.remove(userArgs.key);
+                                    // Send response from server to client indicating that 'delete' operation was successful
+                                    sendResponse(Response.deleteOk(), output);
 
-                                        // Write to db.json
-                                        Files.writeString(database.dbPath(), new Gson().toJson(dbMap));
-
-                                        writeLock.unlock();
-
-                                        // Send response from server to client indicating that 'delete' operation was successful
-                                        sendResponse(Response.deleteOk(), output);
-
-
-                                    } else {
-                                        // If the given key was not found, send an ERROR response
-                                        sendResponse(Response.deleteError("No such key"), output);
-                                    }
-
-                                } catch (IOException e) {
-                                    throw new RuntimeException(e);
+                                } else {
+                                    // If the given key was not found, send an ERROR response
+                                    sendResponse(Response.deleteError("No such key"), output);
                                 }
+
                             });
 
                             break;
@@ -176,7 +144,7 @@ public class Server {
                     executor.shutdown();
                     executor.awaitTermination(1000, TimeUnit.MILLISECONDS);
 
-                } catch (IOException e) {
+                } catch (InterruptedException e) {
 
                 }
             }
@@ -197,30 +165,4 @@ public class Server {
 
     }
 
-    // This method generates a HashMap from a file containing JSON data
-    public static HashMap<String, String> generateHashMap(Path dbFile) {
-        try {
-            String dbString = Files.readString(dbFile);
-            if (dbString != null && !dbString.equals("")) {
-                HashMap<String, String> dbMap = new Gson().fromJson(dbString, HashMap.class);
-
-                return dbMap;
-
-            } else return new HashMap<>();
-        } catch (IOException e) {
-            System.out.println("Problem reading database from file.");
-
-            return null;
-        }
-    }
-
-    private static void writeToDatabase(Path dbPath, String entry) {
-        // Write to db.json
-        try {
-            Files.writeString(dbPath, entry);
-        } catch (IOException e) {
-            System.out.println("Problem reading database file.");
-        }
-
-    }
 }

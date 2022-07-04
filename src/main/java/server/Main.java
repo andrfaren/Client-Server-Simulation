@@ -10,10 +10,10 @@ public class Main {
         final Path dbPath = Path.of("./src/main/java/server/data/db.json");
 
         // Create the db
-        final Database jsonDatabase = new Database(dbPath);
+        final Database database = new Database(dbPath);
 
         // Create the server
-        final Server server = new Server(jsonDatabase);
+        final Server server = new Server(database);
 
         server.start();
 
