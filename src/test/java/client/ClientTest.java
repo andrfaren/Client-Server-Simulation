@@ -6,6 +6,7 @@ import server.Main;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@Deprecated
 class ClientTest {
 
     @BeforeAll
@@ -28,7 +29,7 @@ class ClientTest {
         clientGetNotExists.sendMessage(new String[]{"-t", "get", "-k", "1"});
         assertEquals("{\"response\":\"ERROR\",\"reason\":\"No such key\"}", clientGetNotExists.messageReceived);
 
-        // Check response when setting a value that does not exist
+        // Check response when setting a value
         Client clientSet = new Client();
         clientSet.sendMessage(new String[]{"-t", "set", "-k", "1", "-v", "HelloWorld!"});
         assertEquals("{\"response\":\"OK\"}", clientSet.messageReceived);
