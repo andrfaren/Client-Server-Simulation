@@ -19,3 +19,4 @@ Currently supports multiple concurrent requests - one thread per request.
 Libraries used:
  - GSON
  - JCommander
+ - Spock
